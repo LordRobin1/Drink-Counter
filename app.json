@@ -2,7 +2,7 @@
   "expo": {
     "name": "Drink Counter",
     "slug": "DrinkCounter",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/favicon.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2b2b2b"
+        "backgroundColor": "#1b1b1b"
       },
       "package": "com.lordrobin.DrinkCounter"
     },

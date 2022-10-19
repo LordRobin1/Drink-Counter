@@ -53,6 +53,7 @@ const style = StyleSheet.create({
     fontWeight: 'normal',
     color: 'white',
     maxWidth: 180,
+    textAlignVertical: 'center',
   },
   icon: {
     color: 'white',
