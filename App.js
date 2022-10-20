@@ -77,7 +77,7 @@ export default function App() {
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
     
-    if (!countD || countDooku === 0) {
+    if (!countD || (countDooku === 0 && !plusMinus)) {
       return
     }
     if (plusMinus) {
