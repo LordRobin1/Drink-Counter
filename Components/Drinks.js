@@ -1,43 +1,43 @@
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { StyleSheet, Text, View, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, View, ScrollView, Pressable } from 'react-native';
 import Drink from './Drink';
 
 
-const Drinks = ({ drinks, change, handleOpen, beerArray }) => {
+const Drinks = ({ currentStyle, drinks, change, openAdd, openEdit, beerArray }) => {
 
-  const open = () => {
-    handleOpen(1, true)
-  }
+  const styles = StyleSheet.create({
+    plus: {
+    backgroundColor: currentStyle.drinkColor,
+    marginVertical: 5,
+    marginHorizontal: 30,
+    borderRadius: 10,
+    },
+    icon: {
+      textAlign: 'center',
+      color: currentStyle.name !== 'light' ? 'grey' : '#d0d0d0',
+      fontSize: 24,
+      margin: 20,
+    }
+  })
+
   return (
     <ScrollView fadingEdgeLength={100}>
         {
           drinks.map( (drink) => {
-              return (<Drink drink={drink} change={change} handleOpen={handleOpen} beerArray={beerArray} key={drink.key}/>)
+              return (
+                <Drink currentStyle={currentStyle} drink={drink} change={change} openEdit={openEdit} beerArray={beerArray} key={drink.key}/>
+              )
             }                
           )
         }
         <View style={styles.plus}>
-          <Pressable android_ripple={{color: '#aaaaaa', borderless: true, radius: 250}} onPress={open}>
+          <Pressable android_ripple={{color: currentStyle.rippleColor, borderless: true, radius: 250}} onPress={openAdd}>
             <Icon name='plus' style={styles.icon}/>
           </Pressable>
         </View>
     </ScrollView>
     
-  )
+    )
 }
-const styles = StyleSheet.create({
-  plus: {
-    backgroundColor: '#252525',
-    marginVertical: 5,
-    marginHorizontal: 30,
-    borderRadius: 10,
-  },
-  icon: {
-    textAlign: 'center',
-    color: 'grey',
-    fontSize: 24,
-    margin: 20,
-  }
-})
 
 export default Drinks

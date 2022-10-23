@@ -3,6 +3,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import Icon from 'react-native-vector-icons/EvilIcons'
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,8 +15,10 @@ import AddDrink from './Components/AddDrink';
 import EditDrink from './Components/EditDrink';
 import EditCount from './Components/EditCount';
 import EditHeadLine from './Components/EditHeadLine';
+import Settings from './Components/Settings'
 import { editObject, readObject, saveObject } from './Components/Backend';
-import Fassroller from './assets/adaptive-icon.png';
+import { dark, light, blue } from './styles.js';
+import Fassroller from './assets/favicon.png';
 
 
 export default function App() {
@@ -25,26 +28,32 @@ export default function App() {
   const [title, setTitle] = useState('Drink Counter')
   const [beerArray, setBeerArray] = useState(['Pils', 'Urpils', 'Beckers', 'Bier', 'Weizen'])
   const [appIsReady, setAppIsReady] = useState(false);
-  
-  const sheetRef = useRef(null)
-  const csheetRef = useRef(null)
-  const hsheetRef = useRef(null)
+  const [styles, setStyles] = useState(dark)
+
+  const addSheetRef = useRef(null)
+  const editSheetRef = useRef(null)
+  const countSheetRef = useRef(null)
+  const HLSheetRef = useRef(null)
+  const settingsSheetRef = useRef(null)
+  const historySheetRef = useRef(null)
+
   const snapPoints = ['40%', '60%']
   const snapPoints1 = ['60%', '85%']
-  const [addDrink, setAddDrink] = useState(true)
   const [pressedDrink, setPressedDrink] = useState({});
 
   useEffect(() => {
     const fetchDrinks = async () => {
-      try {  
+      try {
         const storedTitle = await readObject('Title')
         const storedDrinks = await readObject('drinks')
         const storedDooku = await readObject('BigDDuddersDooku')
         const storedBeerArray = await readObject('BeerArray')
+        const storedTheme = await readObject('Theme')
         storedDrinks !== null && setDrinks(storedDrinks)
         storedDooku !== null && setCountDooku(storedDooku)
         storedTitle !== null && setTitle(storedTitle)
         storedBeerArray !== null && setBeerArray(storedBeerArray)
+        storedTheme !== null && setStyles(storedTheme)
       } catch(e) {
         console.warn(e)
       } finally {
@@ -101,7 +110,7 @@ export default function App() {
     const tempDrinks = [...drinks, {name: drink.name, price: drink.price, count: 0, key: uuidv4()}]
     setDrinks(tempDrinks)
     await saveObject('drinks', tempDrinks)
-    sheetRef.current.close()
+    addSheetRef.current.close()
   }
 
   const Delete = async (drink) => {
@@ -109,7 +118,7 @@ export default function App() {
     const tempDrinks = drinks.filter(drink => drink.key !== key)
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
-    sheetRef.current.close()
+    editSheetRef.current.close()
   }
 
   const edit = async (drink, countDifference) => {
@@ -133,157 +142,231 @@ export default function App() {
     const tempDrinks = drinks.map(drink => drink.key === key ? drink = {name: name, price: price, count: count, key: key} : drink)
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
-    sheetRef.current.close()
+    editSheetRef.current.close()
   }
 
   const setDooku = async (number) => {
     setCountDooku(number)
     await editObject('BigDDuddersDooku', number)
-    csheetRef.current.close()
+    countSheetRef.current.close()
   }
 
   const setHeadLine = async (HL) => {
     setTitle(HL)
-    // await saveObject('Title', HL)
     await editObject('Title', HL)
-    hsheetRef.current.close()
+    HLSheetRef.current.close()
   }
   
   const setBeers = async (beers) => {
     setBeerArray(beers)
     console.log(beers)
     await editObject('BeerArray', beers)
-    csheetRef.current.close()
+    countSheetRef.current.close()
+  }
+
+  const changeStyle = async (style) => {
+    if (style === 'dark') {
+      setStyles(dark)
+      await editObject('Theme', dark)
+    }
+    else if (style === 'light') {
+      setStyles(light)
+      await editObject('Theme', light)
+    }
+    else {
+      setStyles(blue)
+      await editObject('Theme', blue)
+    }
   }
   
   //Bottomsheet
-  const handleOpen = async (index, bool, drink) => {
+  const openAddSheet = async () => {
+    addSheetRef.current.snapToIndex(1)
+    editSheetRef.current.close()
+    HLSheetRef.current.close()
+    settingsSheetRef.current.close()
+    countSheetRef.current.close()
+  }
+  const openEditSheet = async (drink) => {
     setPressedDrink(drink)
-    setAddDrink(bool)
-    csheetRef.current.close()
-    hsheetRef.current.close()
-    await new Promise(r => setTimeout(r, 0))
-    sheetRef.current.snapToIndex(index)
+    editSheetRef.current.snapToIndex(1)
+    addSheetRef.current.close()
+    countSheetRef.current.close()
+    HLSheetRef.current.close()
+    settingsSheetRef.current.close()
   }
 
-  const openCEdit = () => {
-    sheetRef.current.close()
-    hsheetRef.current.close()
-    csheetRef.current.snapToIndex(1)
+  const openCountSheet = () => {
+    countSheetRef.current.snapToIndex(1)
+    addSheetRef.current.close()
+    editSheetRef.current.close()
+    HLSheetRef.current.close()
+    settingsSheetRef.current.close()
   }
 
-  const openHeadLineEdit = () => {
-    sheetRef.current.close()
-    csheetRef.current.close()
-    hsheetRef.current.snapToIndex(1)
+  const openHeadLineSheet = () => {
+    HLSheetRef.current.snapToIndex(1)
+    addSheetRef.current.close()
+    editSheetRef.current.close()
+    countSheetRef.current.close()
+    settingsSheetRef.current.close()
   }
+  
+  const openSettingsSheet = () => {
+    settingsSheetRef.current.snapToIndex(1)
+    addSheetRef.current.close()
+    editSheetRef.current.close()
+    countSheetRef.current.close()
+    HLSheetRef.current.close()
+  }
+
+  const sheetStyle = StyleSheet.create({
+    container: {
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      backgroundColor: styles.sheetColor,
+      paddingHorizontal: 40,
+    },
+    text: {
+      textAlign: 'center',
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginTop: 20,
+      color: styles.textColor,
+    },
+    input: {
+      color: styles.textColor,
+      fontSize: 20,
+      marginVertical: 10,
+      padding: 5,
+      borderBottomColor: '#00417d',
+      borderBottomWidth: 1,
+    },
+    icon: {
+      color: styles.textColor,
+      fontSize: 20,
+      textAlign: 'center',
+      marginVertical: 10,
+      backgroundColor: styles.sheetHandleColor,
+      padding: 10,
+      borderRadius: 10,
+    },
+  })
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-        <View style={styles.container} onLayout={onLayoutRootView}> 
-          <Pressable onLongPress={openHeadLineEdit} delayLongPress={1000}>
-            <Text style={styles.text}>{title}</Text>
-          </Pressable>
 
+    <GestureHandlerRootView style={{flex: 1}}>
+
+        <View style={styles.container} onLayout={onLayoutRootView}> 
+
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Pressable onLongPress={openHeadLineSheet} delayLongPress={1000}>
+              <Text style={styles.text}>{title}</Text>
+            </Pressable>
+            <Pressable onPress={openSettingsSheet}>
+              <Icon name='gear' style={styles.icon}/>
+            </Pressable>
+          </View>
+          
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
             <Image style={styles.fassroller} source={Fassroller} fadeDuration={0}/>
-            <Pressable onLongPress={openCEdit} delayLongPress={2500}>
+            <Pressable onLongPress={openCountSheet} delayLongPress={2500}>
               <Text style={styles.countSudoku}>{countDooku}</Text>
             </Pressable>
           </View>
+
           <View style={styles.content}>
-            <Drinks drinks={drinks} change={changeCount} handleOpen={handleOpen} beerArray={beerArray}/>
-            <BottomMenu drinks={drinks} onPaid={reset}/>
+            <Drinks currentStyle={styles} drinks={drinks} change={changeCount} openAdd={openAddSheet}
+                    openEdit={openEditSheet} beerArray={beerArray}/>
+            <BottomMenu currentStyle={styles} drinks={drinks} onPaid={reset}/>
           </View>
 
           <BottomSheet
-            ref={csheetRef}
+            ref={countSheetRef}
             snapPoints={snapPoints1}
             index={-1}
             enableOverDrag
             enablePanDownToClose
             backdropComponent={backDrop}
-            backgroundStyle={{backgroundColor: '#252525', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleStyle={{backgroundColor: '#1b1b1b', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleIndicatorStyle={{backgroundColor: 'white',}}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
           >
-            <View style={{backgroundColor: '#1b1b1b',}}>
-              <EditCount count={countDooku} setDooku={setDooku} beers={beerArray} setBeers={setBeers}/>
-            </View>
-          </BottomSheet>
-          <BottomSheet
-            ref={hsheetRef}
-            snapPoints={snapPoints}
-            index={-1}
-            enableOverDrag
-            enablePanDownToClose
-            backdropComponent={backDrop}
-            backgroundStyle={{backgroundColor: '#252525', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleStyle={{backgroundColor: '#1b1b1b', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleIndicatorStyle={{backgroundColor: 'white',}}
-          >
-            <View style={{backgroundColor: '#1b1b1b',}}>
-              <EditHeadLine HL={title} setHL={setHeadLine}/>
-            </View>
-          </BottomSheet>
-          <BottomSheet
-            ref={sheetRef}
-            snapPoints={snapPoints}
-            index={-1}
-            enableOverDrag
-            enablePanDownToClose
-            backdropComponent={backDrop}
-            backgroundStyle={{backgroundColor: '#252525', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleStyle={{backgroundColor: '#1b1b1b', borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
-            handleIndicatorStyle={{backgroundColor: 'white',}}
-            >
-            <View style={{backgroundColor: '#1b1b1b',}}>
-              {addDrink ? <AddDrink saveDrink={save} drinks={drinks}/> : <EditDrink Delete={Delete} editDrink={edit} pressedDrink={pressedDrink} beerArray={beerArray}/>}
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <EditCount sheetStyle={sheetStyle} count={countDooku} setDooku={setDooku} 
+                         beers={beerArray} setBeers={setBeers}
+              />
             </View>
           </BottomSheet>
 
-          <StatusBar style="light" />
+          <BottomSheet
+            ref={HLSheetRef}
+            snapPoints={snapPoints}
+            index={-1}
+            enableOverDrag
+            enablePanDownToClose
+            backdropComponent={backDrop}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
+          >
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <EditHeadLine sheetStyle={sheetStyle} HL={title} setHL={setHeadLine}/>
+            </View>
+          </BottomSheet>
+
+          <BottomSheet
+            ref={addSheetRef}
+            snapPoints={snapPoints}
+            index={-1}
+            enableOverDrag
+            enablePanDownToClose
+            backdropComponent={backDrop}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
+            >
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <AddDrink sheetStyle={sheetStyle} saveDrink={save} drinks={drinks}/>
+            </View>
+          </BottomSheet>
+
+          <BottomSheet
+            ref={editSheetRef}
+            snapPoints={snapPoints}
+            index={-1}
+            enableOverDrag
+            enablePanDownToClose
+            backdropComponent={backDrop}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
+            >
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <EditDrink sheetStyle={sheetStyle} Delete={Delete} editDrink={edit} 
+                  pressedDrink={pressedDrink} beerArray={beerArray}
+              />
+            </View>
+          </BottomSheet>
+
+          <BottomSheet
+            ref={settingsSheetRef}
+            snapPoints={snapPoints}
+            index={-1}
+            enableOverDrag
+            enablePanDownToClose
+            backdropComponent={backDrop}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
+            >
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <Settings currentStyle={styles} changeStyle={style => changeStyle(style)}/>
+            </View>
+          </BottomSheet>
+
+          <StatusBar style={`${styles.name !== 'light' ? 'light' : 'dark'}`} />
         </View>
     </GestureHandlerRootView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#2b2b2b',
-  },
-  content: {
-    flex: 1,
-    paddingBottom: 50,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  text: {
-    fontWeight: 'bold',
-    fontSize: 40,
-    color: '#fff',
-    marginTop: 50,
-    marginBottom: 15,
-    marginHorizontal: 20,
-    textAlignVertical: 'center',
-  },
-  countSudoku: {
-    fontWeight: 'bold',
-    fontSize: 40,
-    color: '#fff',
-    marginBottom: 25,
-    marginTop: 15,
-    marginHorizontal: 20,
-    backgroundColor: '#00417d',
-    borderRadius: 5,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    paddingHorizontal: 20,
-  },
-  fassroller: {
-    width: 85,
-    height: 85,
-  }
-});

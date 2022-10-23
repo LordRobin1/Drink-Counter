@@ -1,7 +1,28 @@
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-const Drink = ({ drink, change, handleOpen, beerArray }) => {
+const Drink = ({ currentStyle, drink, change, openEdit, beerArray }) => {
+  const textColor = currentStyle.name !== 'light' ? currentStyle.textColor : '#fff'
+  const style = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      margin: 20,
+    },
+    list: {
+      fontSize: 20,
+      fontWeight: 'normal',
+      color: textColor,
+      maxWidth: 180,
+      textAlignVertical: 'center',
+      paddingBottom: 3,
+    },
+    icon: {
+      color: '#fff',
+      fontSize: 24,
+    }
+  })
 
   const add = () => {
     drink.count++
@@ -13,23 +34,25 @@ const Drink = ({ drink, change, handleOpen, beerArray }) => {
     change(drink, beerArray.includes(drink.name), false)
   }
   const drinkLongPress = () => {
-    handleOpen(1, false, drink)
+    openEdit(drink)
   }
 
   return (
-    <View style={{marginVertical: 5, marginHorizontal: 30, borderRadius: 10, backgroundColor: '#252525',}}>
-      <Pressable android_ripple={{color: '#aaaaaa', borderless: true, radius: 250,}} onLongPress={drinkLongPress}>
+    <View style={{marginVertical: 5, marginHorizontal: 30, borderRadius: 10, backgroundColor: currentStyle.drinkColor,}}>
+      <Pressable android_ripple={{color: currentStyle.rippleColor, borderless: true, radius: 250,}} onLongPress={drinkLongPress}>
         <View style={style.container}>
           <Text style={style.list}>{drink.name}</Text>
 
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', textAlignVertical: 'center'}}>
-            <Pressable onPress={substract} style={{display: 'flex', justifyContent: 'center'}} hitSlop={6}>
+            <Pressable onPress={substract} style={{display: 'flex', justifyContent: 'center'}} hitSlop={15}>
               <Icon name='minus' style={style.icon}/>
             </Pressable>
 
-            <Text style={{fontSize: 24, color: 'white', marginHorizontal: 7, textAlignVertical: 'center', paddingBottom: 5,}}>{drink.count}</Text>
+            <Text style={{fontSize: 24, color: textColor, marginHorizontal: 12, textAlignVertical: 'center', paddingBottom: 5,}}>
+              {drink.count}
+            </Text>
 
-            <Pressable onPress={add} style={{display: 'flex', justifyContent: 'center'}} hitSlop={6}>
+            <Pressable onPress={add} style={{display: 'flex', justifyContent: 'center'}} hitSlop={15}>
               <Icon name='plus' style={style.icon}/>
             </Pressable>
           </View>
@@ -40,23 +63,3 @@ const Drink = ({ drink, change, handleOpen, beerArray }) => {
 }
 
 export default Drink
-
-const style = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 20,
-  },
-  list: {
-    fontSize: 20,
-    fontWeight: 'normal',
-    color: 'white',
-    maxWidth: 180,
-    textAlignVertical: 'center',
-  },
-  icon: {
-    color: 'white',
-    fontSize: 24,
-  }
-})

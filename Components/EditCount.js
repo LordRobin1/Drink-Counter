@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { View, StyleSheet, TextInput, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
-const EditCount = ({count, setDooku, beers, setBeers}) => {
+const EditCount = ({sheetStyle, count, setDooku, beers, setBeers}) => {
+  const styles = sheetStyle
   
-    const [sudooku, setSudooku] = useState('')
-    const [beerArray, setBeerArray] = useState([])
+  const [sudooku, setSudooku] = useState('')
+  const [beerArray, setBeerArray] = useState([])
 
     useEffect(() => {
         setSudooku(String(count))
@@ -55,37 +56,5 @@ const EditCount = ({count, setDooku, beers, setBeers}) => {
     </View>
   )
 }
-const styles = StyleSheet.create({
-    container: {
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      backgroundColor: '#252525',
-      paddingHorizontal: 40,
-    },
-    text: {
-      textAlign: 'center',
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginTop: 20,
-      color: 'white',
-    },
-    input: {
-      color: 'white',
-      fontSize: 20,
-      marginVertical: 10,
-      padding: 5,
-      borderBottomColor: '#00417d',
-      borderBottomWidth: 1,
-    },
-    icon: {
-      color: 'white',
-      fontSize: 20,
-      textAlign: 'center',
-      marginVertical: 10,
-      backgroundColor: '#1b1b1b',
-      padding: 10,
-      borderRadius: 10,
-    },
-})
 
 export default EditCount

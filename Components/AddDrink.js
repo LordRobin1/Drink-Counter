@@ -2,7 +2,8 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const AddDrink = ({ saveDrink, drinks }) => {
+const AddDrink = ({ sheetStyle, saveDrink, drinks }) => {
+  const styles = sheetStyle
   
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
@@ -29,37 +30,5 @@ const AddDrink = ({ saveDrink, drinks }) => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    backgroundColor: '#252525',
-    paddingHorizontal: 40,
-  },
-  text: {
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: 'white',
-  },
-  input: {
-    color: 'white',
-    fontSize: 20,
-    marginVertical: 10,
-    padding: 5,
-    borderBottomColor: '#00417d',
-    borderBottomWidth: 1,
-  },
-  icon: {
-    color: 'white',
-    fontSize: 20,
-    textAlign: 'center',
-    marginVertical: 10,
-    backgroundColor: '#1b1b1b',
-    padding: 10,
-    borderRadius: 10,
-  },
-})
 
 export default AddDrink
