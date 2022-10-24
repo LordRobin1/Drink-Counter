@@ -48,9 +48,9 @@ export const dark = StyleSheet.create({
     },
     text: {
         fontWeight: 'bold',
-        fontSize: 35,
+        fontSize: 30,
         color: colors.dbTextColor,
-        marginTop: 50,
+        marginTop: 53,
         marginBottom: 15,
         marginHorizontal: 20,
         textAlignVertical: 'center',
@@ -76,7 +76,7 @@ export const dark = StyleSheet.create({
     icon: {
         color: colors.dbTextColor,
         fontSize: 40,
-        marginHorizontal: 20,
+        marginRight: 10,
         marginTop: 58,
     }
 });
@@ -103,9 +103,9 @@ export const blue = StyleSheet.create({
     },
     text: {
       fontWeight: 'bold',
-      fontSize: 35,
+      fontSize: 30,
       color: colors.dbTextColor,
-      marginTop: 50,
+      marginTop: 53,
       marginBottom: 15,
       marginHorizontal: 20,
       textAlignVertical: 'center',
@@ -131,7 +131,7 @@ export const blue = StyleSheet.create({
     icon: {
       color: colors.dbTextColor,
       fontSize: 40,
-      marginHorizontal: 20,
+      marginRight: 10,
       marginTop: 58,
     }
 });
@@ -158,9 +158,9 @@ export const light = StyleSheet.create({
     },
     text: {
       fontWeight: 'bold',
-      fontSize: 35,
+      fontSize: 30,
       color: colors.lightTextColor,
-      marginTop: 50,
+      marginTop: 53,
       marginBottom: 15,
       marginHorizontal: 20,
       textAlignVertical: 'center',
@@ -186,7 +186,7 @@ export const light = StyleSheet.create({
     icon: {
       color: colors.lightTextColor,
       fontSize: 40,
-      marginHorizontal: 20,
+      marginRight: 10,
       marginTop: 58,
     }
 });

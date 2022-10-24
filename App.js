@@ -15,7 +15,8 @@ import AddDrink from './Components/AddDrink';
 import EditDrink from './Components/EditDrink';
 import EditCount from './Components/EditCount';
 import EditHeadLine from './Components/EditHeadLine';
-import Settings from './Components/Settings'
+import Settings from './Components/Settings';
+import History from './Components/History';
 import { editObject, readObject, saveObject } from './Components/Backend';
 import { dark, light, blue } from './styles.js';
 import Fassroller from './assets/favicon.png';
@@ -29,6 +30,7 @@ export default function App() {
   const [beerArray, setBeerArray] = useState(['Pils', 'Urpils', 'Beckers', 'Bier', 'Weizen'])
   const [appIsReady, setAppIsReady] = useState(false);
   const [styles, setStyles] = useState(dark)
+  const [history, setHistory] = useState([])
 
   const addSheetRef = useRef(null)
   const editSheetRef = useRef(null)
@@ -38,8 +40,8 @@ export default function App() {
   const historySheetRef = useRef(null)
 
   const snapPoints = ['40%', '60%']
-  const snapPoints1 = ['60%', '85%']
-  const [pressedDrink, setPressedDrink] = useState({});
+  const snapPoints_1 = ['60%', '85%']
+  const [pressedDrink, setPressedDrink] = useState(dark);
 
   useEffect(() => {
     const fetchDrinks = async () => {
@@ -84,20 +86,60 @@ export default function App() {
     const count = passedDrink.count
     const tempDrinks = drinks.map(drink => drink.key === key ? { ...drink, count: count } : drink)
     setDrinks(tempDrinks)
-    await editObject('drinks', tempDrinks)
     
     if (!countD || (countDooku === 0 && !plusMinus)) {
+      await editObject('drinks', tempDrinks)
       return
     }
     if (plusMinus) {
       const DooSuCountu = countDooku + 1
       setCountDooku(DooSuCountu)
+      await editObject('drinks', tempDrinks)
       await editObject('BigDDuddersDooku', DooSuCountu)
+       updateHistory(passedDrink, 1)
       return
     }
     const DooSuCountu = countDooku - 1
     setCountDooku(DooSuCountu)
+    await editObject('drinks', tempDrinks)
     await editObject('BigDDuddersDooku', DooSuCountu)
+     updateHistory(passedDrink, -1)
+  }
+
+  const updateHistory = (drink, num) => {
+    const date = new Date()
+    const day = `${date}`.substring(0, 15)
+    if (history.length === 0) {
+      console.log('empty history')
+      const drinkTemp = [{...drink}]
+      console.log('drinkTemp',drinkTemp)
+      setHistory([{
+          date: day,
+          drinks: [{...drink}],
+        }]
+      )
+      return
+    }
+    const temp = Array.from(history)
+    console.log('temp_1', temp, temp[0].drinks)
+    for (const item of temp) {
+      if (item.date !== day) {
+        continue
+      }
+      let exists
+      item.drinks.map(obj => {
+        if (obj.name === drink.name) {
+          obj.count += num
+          exists = true
+        }
+      })
+      if (!exists) {
+        item.drinks.push(drink)
+      }
+      break
+    }
+    setHistory(temp)
+    // await saveObject('History', history)
   }
 
   const reset = async () => {
@@ -143,6 +185,7 @@ export default function App() {
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
     editSheetRef.current.close()
+    console.log(history)
   }
 
   const setDooku = async (number) => {
@@ -186,6 +229,7 @@ export default function App() {
     HLSheetRef.current.close()
     settingsSheetRef.current.close()
     countSheetRef.current.close()
+    historySheetRef.current.close()
   }
   const openEditSheet = async (drink) => {
     setPressedDrink(drink)
@@ -194,6 +238,7 @@ export default function App() {
     countSheetRef.current.close()
     HLSheetRef.current.close()
     settingsSheetRef.current.close()
+    historySheetRef.current.close()
   }
 
   const openCountSheet = () => {
@@ -202,6 +247,7 @@ export default function App() {
     editSheetRef.current.close()
     HLSheetRef.current.close()
     settingsSheetRef.current.close()
+    historySheetRef.current.close()
   }
 
   const openHeadLineSheet = () => {
@@ -210,6 +256,7 @@ export default function App() {
     editSheetRef.current.close()
     countSheetRef.current.close()
     settingsSheetRef.current.close()
+    historySheetRef.current.close()
   }
   
   const openSettingsSheet = () => {
@@ -218,7 +265,17 @@ export default function App() {
     editSheetRef.current.close()
     countSheetRef.current.close()
     HLSheetRef.current.close()
+    historySheetRef.current.close()
   }
+  const openHistorySheet = () => {
+    historySheetRef.current.snapToIndex(1)
+    settingsSheetRef.current.close()
+    addSheetRef.current.close()
+    editSheetRef.current.close()
+    countSheetRef.current.close()
+    HLSheetRef.current.close()
+  }
+  
 
   const sheetStyle = StyleSheet.create({
     container: {
@@ -263,8 +320,11 @@ export default function App() {
             <Pressable onLongPress={openHeadLineSheet} delayLongPress={1000}>
               <Text style={styles.text}>{title}</Text>
             </Pressable>
+            <Pressable onPress={openHistorySheet}>
+              <Icon name='clock' style={styles.icon}/>
+            </Pressable>
             <Pressable onPress={openSettingsSheet}>
-              <Icon name='gear' style={styles.icon}/>
+              <Icon name='gear' style={{...styles.icon, marginRight: 15}}/>
             </Pressable>
           </View>
           
@@ -283,7 +343,7 @@ export default function App() {
 
           <BottomSheet
             ref={countSheetRef}
-            snapPoints={snapPoints1}
+            snapPoints={snapPoints_1}
             index={-1}
             enableOverDrag
             enablePanDownToClose
@@ -362,6 +422,22 @@ export default function App() {
             >
             <View style={{backgroundColor: styles.sheetHandleColor,}}>
               <Settings currentStyle={styles} changeStyle={style => changeStyle(style)}/>
+            </View>
+          </BottomSheet>
+
+          <BottomSheet
+            ref={historySheetRef}
+            snapPoints={snapPoints_1}
+            index={-1}
+            enableOverDrag
+            enablePanDownToClose
+            backdropComponent={backDrop}
+            backgroundStyle={{backgroundColor: styles.sheetColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleStyle={{backgroundColor: styles.sheetHandleColor, borderTopLeftRadius: 20, borderTopRightRadius: 20,}}
+            handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
+            >
+            <View style={{backgroundColor: styles.sheetHandleColor,}}>
+              <History sheetStyle={sheetStyle} drinks={drinks} history={history}/>
             </View>
           </BottomSheet>
 
