@@ -5,7 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/EvilIcons'
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync();
 
@@ -96,45 +96,44 @@ export default function App() {
       setCountDooku(DooSuCountu)
       await editObject('drinks', tempDrinks)
       await editObject('BigDDuddersDooku', DooSuCountu)
-       updateHistory(passedDrink, 1)
+      updateHistory(passedDrink, 1)
       return
     }
     const DooSuCountu = countDooku - 1
     setCountDooku(DooSuCountu)
     await editObject('drinks', tempDrinks)
     await editObject('BigDDuddersDooku', DooSuCountu)
-     updateHistory(passedDrink, -1)
+    updateHistory(passedDrink, -1)
   }
 
   const updateHistory = (drink, num) => {
-    const date = new Date()
-    const day = `${date}`.substring(0, 15)
-    if (history.length === 0) {
-      console.log('empty history')
-      const drinkTemp = [{...drink}]
-      console.log('drinkTemp',drinkTemp)
-      setHistory([{
+    const date = new Date("2022-10-24T23:50:21.817Z")
+    const day = `${date}`.substring(0, 14)
+
+    if (history.filter(item => item.date === day ).length === 0) {
+      setHistory([...history, {
           date: day,
-          drinks: [{...drink}],
+          data: [{...drink}],
+          id: v4(),
         }]
       )
       return
     }
+
     const temp = Array.from(history)
-    console.log('temp_1', temp, temp[0].drinks)
     for (const item of temp) {
       if (item.date !== day) {
         continue
       }
       let exists
-      item.drinks.map(obj => {
+      item.data.map(obj => {
         if (obj.name === drink.name) {
           obj.count += num
           exists = true
         }
       })
       if (!exists) {
-        item.drinks.push(drink)
+        item.data.push(drink)
       }
       break
     }
@@ -149,7 +148,7 @@ export default function App() {
   }
 
   const save = async (drink) => {
-    const tempDrinks = [...drinks, {name: drink.name, price: drink.price, count: 0, key: uuidv4()}]
+    const tempDrinks = [...drinks, {name: drink.name, price: drink.price, count: 0, key: v4()}]
     setDrinks(tempDrinks)
     await saveObject('drinks', tempDrinks)
     addSheetRef.current.close()
@@ -185,7 +184,6 @@ export default function App() {
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
     editSheetRef.current.close()
-    console.log(history)
   }
 
   const setDooku = async (number) => {
