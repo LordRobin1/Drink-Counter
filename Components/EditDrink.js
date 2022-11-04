@@ -7,20 +7,23 @@ const EditDrink = ({ sheetStyle, editDrink, Delete, pressedDrink, beerArray }) =
   
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
-  const [count, setCount] = useState('')
-  const [lastCount, setLastCount] = useState(0)
+  const [payCount, setPayCount] = useState('')
+  const [lastPayCount, setLastPayCount] = useState(0)
+  const [count, setCount] = useState(0)
   
   useEffect(() => {
     setName(pressedDrink.name)
     setPrice(String(pressedDrink.price))
-    setCount(String(pressedDrink.count))
-    setLastCount(pressedDrink.count)
+    setPayCount(String(pressedDrink.payCount))
+    setLastPayCount(pressedDrink.payCount)
+    setCount(pressedDrink.count)
   }, [pressedDrink])
 
   const onEditDrink = () => {
       let key = pressedDrink.key
-      const countDifference = beerArray.includes(pressedDrink.name) ?  lastCount - count : 0;
-      editDrink({name, price, count, key}, countDifference)
+      const countDifference = beerArray.includes(pressedDrink.name) ?  lastPayCount - parseInt(payCount) : 0;
+      const newCount = count + (parseInt(payCount) - lastPayCount)
+      editDrink({name, price, payCount: payCount, count: newCount, key}, countDifference)
   }
   const onDelete = () => {
       Delete(pressedDrink);
@@ -34,11 +37,23 @@ const EditDrink = ({ sheetStyle, editDrink, Delete, pressedDrink, beerArray }) =
       />
       <TextInput  style={styles.input} placeholder='Price (cents)' value={price} placeholderTextColor='#aaaaaa'
                   keyboardType='phone-pad' blurOnSubmit
-                  onChangeText={newText => setPrice(newText)} 
+                  onChangeText={newText => {
+                                if(Number.isNaN(parseInt(newText))) {
+                                  setPrice('') 
+                                  return
+                                }
+                                parseInt(newText) < 0 ? setPrice(`${-parseInt(newText)}`) : setPrice(`${parseInt(newText)}`)
+                              }}
       />
-      <TextInput  style={styles.input} placeholder='Count' value={count} placeholderTextColor='#aaaaaa'
+      <TextInput  style={styles.input} placeholder='Count' value={payCount} placeholderTextColor='#aaaaaa'
                   keyboardType='phone-pad' blurOnSubmit
-                  onChangeText={newText => setCount(newText)} 
+                  onChangeText={newText => {
+                                if(Number.isNaN(parseInt(newText))) {
+                                  setPayCount('') 
+                                  return
+                                }
+                                parseInt(newText) < 0 ? setPayCount(`${-parseInt(newText)}`) : setPayCount(`${parseInt(newText)}`)
+                              }}
       />
       <View style={{alignItems: 'center', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
         <Icon name='close' onPress={onDelete} style={styles.icon}> Delete </Icon>

@@ -2,7 +2,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const AddDrink = ({ sheetStyle, saveDrink, drinks }) => {
+const AddDrink = ({ sheetStyle, saveDrink}) => {
   const styles = sheetStyle
   
   const [name, setName] = useState('')
@@ -21,7 +21,14 @@ const AddDrink = ({ sheetStyle, saveDrink, drinks }) => {
                   onChangeText={newText => setName(newText)} blurOnSubmit
       />
       <TextInput  style={styles.input} placeholder='Price (cents)' value={price} placeholderTextColor='#aaaaaa'
-                  keyboardType='phone-pad' onChangeText={newText => setPrice(newText)} blurOnSubmit
+                  keyboardType='phone-pad' blurOnSubmit 
+                  onChangeText={newText => {
+                                if(Number.isNaN(parseInt(newText))) {
+                                  setPrice('') 
+                                  return
+                                }
+                                parseInt(newText) < 0 ? setPrice(`${-parseInt(newText)}`) : setPrice(`${parseInt(newText)}`)
+                              }} 
       />
       <View style={{alignItems: 'center'}}>
         <Icon name='check' onPress={onAddDrink} style={styles.icon}> Save </Icon>

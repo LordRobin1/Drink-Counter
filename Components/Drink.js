@@ -25,11 +25,13 @@ const Drink = ({ currentStyle, drink, change, openEdit, beerArray }) => {
   })
 
   const add = () => {
+    drink.payCount++
     drink.count++
     change(drink, beerArray.includes(drink.name), true)
   }
   const substract = () => {
-    if (drink.count <= 0) return
+    if (drink.payCount <= 0) return
+    drink.payCount--
     drink.count--
     change(drink, beerArray.includes(drink.name), false)
   }
@@ -49,7 +51,7 @@ const Drink = ({ currentStyle, drink, change, openEdit, beerArray }) => {
             </Pressable>
 
             <Text style={{fontSize: 24, color: textColor, marginHorizontal: 12, textAlignVertical: 'center', paddingBottom: 5,}}>
-              {drink.count}
+              {drink.payCount}
             </Text>
 
             <Pressable onPress={add} style={{display: 'flex', justifyContent: 'center'}} hitSlop={15}>

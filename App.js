@@ -17,7 +17,7 @@ import EditCount from './Components/EditCount';
 import EditHeadLine from './Components/EditHeadLine';
 import Settings from './Components/Settings';
 import History from './Components/History';
-import { editObject, readObject, saveObject } from './Components/Backend';
+import { deleteObject, editObject, readObject, saveObject } from './Components/Backend';
 import { dark, light, blue } from './styles.js';
 import Fassroller from './assets/favicon.png';
 
@@ -46,18 +46,28 @@ export default function App() {
   useEffect(() => {
     const fetchDrinks = async () => {
       try {
+        await deleteObject('History')
         const storedTitle = await readObject('Title')
         const storedDrinks = await readObject('drinks')
         const storedDooku = await readObject('BigDDuddersDooku')
         const storedBeerArray = await readObject('BeerArray')
         const storedTheme = await readObject('Theme')
+        const storedHistory = await readObject('History')
+
         storedDrinks !== null && setDrinks(storedDrinks)
         storedDooku !== null && setCountDooku(storedDooku)
         storedTitle !== null && setTitle(storedTitle)
         storedBeerArray !== null && setBeerArray(storedBeerArray)
         storedTheme !== null && setStyles(storedTheme)
+        storedHistory !== null && setHistory(storedHistory)
+
+        const storedDate = await readObject('Date')
+        if(storedDate !== `${new Date()}`.substring(0, 15)) {
+          setDrinks(storedDrinks.map(drink => {return({...drink, count: 0})}))
+        }
+        await editObject('Date', `${new Date()}`.substring(0, 15))
       } catch(e) {
-        console.warn(e)
+        alert("Oh no, something went wrong (╯‵□′)╯︵┻━┻")
       } finally {
         setAppIsReady(true)       
       }
@@ -84,7 +94,8 @@ export default function App() {
   const changeCount = async (passedDrink, countD, plusMinus) => {
     const key = passedDrink.key
     const count = passedDrink.count
-    const tempDrinks = drinks.map(drink => drink.key === key ? { ...drink, count: count } : drink)
+    const payCount = passedDrink.payCount
+    const tempDrinks = drinks.map(drink => drink.key === key ? { ...drink, count: count, payCount: payCount } : drink)
     setDrinks(tempDrinks)
     
     if (!countD || (countDooku === 0 && !plusMinus)) {
@@ -96,30 +107,29 @@ export default function App() {
       setCountDooku(DooSuCountu)
       await editObject('drinks', tempDrinks)
       await editObject('BigDDuddersDooku', DooSuCountu)
-      updateHistory(passedDrink, 1)
+      await updateHistory(passedDrink, 1)
       return
     }
     const DooSuCountu = countDooku - 1
     setCountDooku(DooSuCountu)
     await editObject('drinks', tempDrinks)
     await editObject('BigDDuddersDooku', DooSuCountu)
-    updateHistory(passedDrink, -1)
+    await updateHistory(passedDrink, -1)
   }
 
-  const updateHistory = (drink, num) => {
-    const date = new Date("2022-10-24T23:50:21.817Z")
-    const day = `${date}`.substring(0, 14)
+  const updateHistory = async (drink, num) => {
+    const date = new Date() //"2022-10-24T23:50:21.817Z"
+    const day = `${date}`.substring(0, 15)
 
     if (history.filter(item => item.date === day ).length === 0) {
       setHistory([...history, {
           date: day,
-          data: [{...drink}],
+          data: [{...drink, count: 1}],
           id: v4(),
         }]
       )
       return
-    }
-
+    }    
     const temp = Array.from(history)
     for (const item of temp) {
       if (item.date !== day) {
@@ -128,29 +138,29 @@ export default function App() {
       let exists
       item.data.map(obj => {
         if (obj.name === drink.name) {
-          obj.count += num
+          obj.count = (obj.count + num) < 0 ? 0 : (obj.count) + num
           exists = true
         }
       })
       if (!exists) {
-        item.data.push(drink)
+        item.data.push({...drink, count: 1})
       }
       break
     }
     setHistory(temp)
-    // await saveObject('History', history)
+    await editObject('History', temp)
   }
 
   const reset = async () => {
-    const tempDrinks = drinks.map(drink => {return ({...drink, count: 0})})
+    const tempDrinks = drinks.map(drink => {return ({...drink, payCount: 0})})
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
   }
 
   const save = async (drink) => {
-    const tempDrinks = [...drinks, {name: drink.name, price: drink.price, count: 0, key: v4()}]
+    const tempDrinks = [...drinks, {name: drink.name, price: drink.price, payCount: 0, count: 0, key: v4()}]
     setDrinks(tempDrinks)
-    await saveObject('drinks', tempDrinks)
+    await editObject('drinks', tempDrinks)
     addSheetRef.current.close()
   }
 
@@ -166,10 +176,12 @@ export default function App() {
     const name = drink.name
     const price = drink.price
     const count = drink.count
+    const payCount = drink.payCount
     const key = drink.key
 
     const newDooku = countDooku - countDifference
     const oldDrink = drinks.filter(obj => obj.key === key)[0]
+    await updateHistory(drink, -countDifference)
     if (!beerArray.includes(oldDrink.name) && beerArray.includes(name)) {
       setDooku(countDooku + parseInt(count))
     }
@@ -180,7 +192,9 @@ export default function App() {
       setDooku(newDooku)
     }
 
-    const tempDrinks = drinks.map(drink => drink.key === key ? drink = {name: name, price: price, count: count, key: key} : drink)
+    const tempDrinks = drinks.map(drink => 
+      drink.key === key ? 
+        drink = {name: name, price: price, count: count, payCount: payCount, key: key} : drink)
     setDrinks(tempDrinks)
     await editObject('drinks', tempDrinks)
     editSheetRef.current.close()
@@ -200,7 +214,6 @@ export default function App() {
   
   const setBeers = async (beers) => {
     setBeerArray(beers)
-    console.log(beers)
     await editObject('BeerArray', beers)
     countSheetRef.current.close()
   }
@@ -218,6 +231,11 @@ export default function App() {
       setStyles(blue)
       await editObject('Theme', blue)
     }
+  }
+
+  const resetHistory = async () => {
+    setHistory([])
+    await editObject('History', [])
   }
   
   //Bottomsheet
@@ -276,6 +294,7 @@ export default function App() {
   
 
   const sheetStyle = StyleSheet.create({
+    rippleColor: styles.rippleColor,
     container: {
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
@@ -312,18 +331,31 @@ export default function App() {
 
     <GestureHandlerRootView style={{flex: 1}}>
 
-        <View style={styles.container} onLayout={onLayoutRootView}> 
+        <View style={styles.container} onLayout={onLayoutRootView}>
 
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+            
             <Pressable onLongPress={openHeadLineSheet} delayLongPress={1000}>
               <Text style={styles.text}>{title}</Text>
             </Pressable>
-            <Pressable onPress={openHistorySheet}>
-              <Icon name='clock' style={styles.icon}/>
-            </Pressable>
-            <Pressable onPress={openSettingsSheet}>
-              <Icon name='gear' style={{...styles.icon, marginRight: 15}}/>
-            </Pressable>
+
+              
+            <View style={{ aspectRatio: 1, marginRight: 10, marginTop: 50, height: 48, borderRadius: 10}}>
+              <Pressable onPress={openHistorySheet} 
+                android_ripple={{color: '#aaaaaa', borderless: true, radius: 50,}}
+              >
+                  <Icon name='clock' style={styles.icon}/>
+              </Pressable>
+            </View>
+
+            <View style={{ aspectRatio: 1, marginRight: 10, marginTop: 50, height: 48, borderRadius: 10}}>
+              <Pressable onPress={openSettingsSheet} 
+                android_ripple={{color: '#aaaaaa', borderless: true, radius: 50,}}
+              >
+                  <Icon name='gear' style={{...styles.icon}}/>
+              </Pressable>
+            </View>
+
           </View>
           
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
@@ -435,7 +467,7 @@ export default function App() {
             handleIndicatorStyle={{backgroundColor: styles.sheetHandleIndicatorColor,}}
             >
             <View style={{backgroundColor: styles.sheetHandleColor,}}>
-              <History sheetStyle={sheetStyle} drinks={drinks} history={history}/>
+              <History sheetStyle={sheetStyle} drinks={drinks} history={history} resetHistory={resetHistory}/>
             </View>
           </BottomSheet>
 

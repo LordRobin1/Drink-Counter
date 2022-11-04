@@ -76,8 +76,10 @@ export const dark = StyleSheet.create({
     icon: {
         color: colors.dbTextColor,
         fontSize: 40,
-        marginRight: 10,
-        marginTop: 58,
+        padding: 3, 
+        paddingVertical: 8,
+        textAlign: 'center',
+        textAlignVertical: 'center',
     }
 });
 
@@ -131,8 +133,10 @@ export const blue = StyleSheet.create({
     icon: {
       color: colors.dbTextColor,
       fontSize: 40,
-      marginRight: 10,
-      marginTop: 58,
+      padding: 3, 
+      paddingVertical: 8,
+      textAlign: 'center',
+      textAlignVertical: 'center',
     }
 });
 
@@ -186,7 +190,9 @@ export const light = StyleSheet.create({
     icon: {
       color: colors.lightTextColor,
       fontSize: 40,
-      marginRight: 10,
-      marginTop: 58,
+      padding: 3, 
+      paddingVertical: 8,
+      textAlign: 'center',
+      textAlignVertical: 'center',
     }
 });

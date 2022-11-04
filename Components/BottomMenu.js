@@ -27,7 +27,7 @@ const BottomMenu = ({ currentStyle, drinks, onPaid }) => {
     
     const total = (drinks) => {
         let price = 0;
-        drinks.map(drink => price += (drink.price * drink.count))
+        drinks.map(drink => price += (drink.price * drink.payCount))
         return price / 100
     }
 

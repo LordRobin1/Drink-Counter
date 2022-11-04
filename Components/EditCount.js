@@ -39,7 +39,14 @@ const EditCount = ({sheetStyle, count, setDooku, beers, setBeers}) => {
     <View style={styles.container}>
         <Text style={styles.text}>Edit Total Beers</Text>
         <TextInput  style={styles.input} value={sudooku} placeholder='Total Beers' placeholderTextColor='#aaaaaa'
-                    keyboardType='phone-pad' onChangeText={newText => setSudooku(newText)}/>
+                    keyboardType='phone-pad' onChangeText={newText => {
+                                                            if(Number.isNaN(parseInt(newText))) {
+                                                              setSudooku('') 
+                                                              return
+                                                            }
+                                                            parseInt(newText) < 0 ? setSudooku(`${-parseInt(newText)}`) : setSudooku(`${parseInt(newText)}`)
+                                                          }}
+        />
         <View style={{alignItems: 'center', display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly'}}>
             <Icon name='close' onPress={onResetDooku} style={styles.icon}> Reset </Icon>
             <Icon name='check' onPress={onSubmitDooku} style={styles.icon}> Save </Icon>
