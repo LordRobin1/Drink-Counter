@@ -14,7 +14,7 @@ const Drinks = ({ currentStyle, drinks, change, openAdd, openEdit, beerArray }) 
     },
     icon: {
       textAlign: 'center',
-      color: currentStyle.name !== 'light' ? 'grey' : '#d0d0d0',
+      color: '#fff',
       fontSize: 24,
       margin: 20,
     }

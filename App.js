@@ -19,7 +19,7 @@ import Settings from './Components/Settings';
 import History from './Components/History';
 import { deleteObject, editObject, readObject, saveObject } from './Components/Backend';
 import { dark, light, blue } from './styles.js';
-import Fassroller from './assets/favicon.png';
+import Fassroller from './assets/fassroller.svg';
 
 
 export default function App() {
@@ -359,10 +359,13 @@ export default function App() {
           </View>
           
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-            <Image style={styles.fassroller} source={Fassroller} fadeDuration={0}/>
+
+            <Fassroller width={styles.fassroller.width} height={styles.fassroller.height} fill={styles.fassroller.color}/>
+
             <Pressable onLongPress={openCountSheet} delayLongPress={2500}>
               <Text style={styles.countSudoku}>{countDooku}</Text>
             </Pressable>
+
           </View>
 
           <View style={styles.content}>
