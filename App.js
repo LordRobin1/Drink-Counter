@@ -1,25 +1,25 @@
-import { StyleSheet, Text, View, Pressable, Image } from 'react-native';
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import Icon from 'react-native-vector-icons/EvilIcons'
-import 'react-native-get-random-values';
-import { v4 } from 'uuid';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-get-random-values';
+import Icon from 'react-native-vector-icons/EvilIcons';
+import { v4 } from 'uuid';
 SplashScreen.preventAutoHideAsync();
 
+import Fassroller from './assets/fassroller.svg';
+import AddDrink from './Components/AddDrink';
+import { editObject, readObject } from './Components/Backend';
 import BottomMenu from './Components/BottomMenu';
 import Drinks from './Components/Drinks';
-import AddDrink from './Components/AddDrink';
-import EditDrink from './Components/EditDrink';
 import EditCount from './Components/EditCount';
+import EditDrink from './Components/EditDrink';
 import EditHeadLine from './Components/EditHeadLine';
-import Settings from './Components/Settings';
 import History from './Components/History';
-import { deleteObject, editObject, readObject, saveObject } from './Components/Backend';
-import { dark, light, blue } from './styles.js';
-import Fassroller from './assets/fassroller.svg';
+import Settings from './Components/Settings';
+import { blue, dark, light } from './styles.js';
 
 
 export default function App() {
@@ -46,7 +46,6 @@ export default function App() {
   useEffect(() => {
     const fetchDrinks = async () => {
       try {
-        await deleteObject('History')
         const storedTitle = await readObject('Title')
         const storedDrinks = await readObject('drinks')
         const storedDooku = await readObject('BigDDuddersDooku')
@@ -117,17 +116,23 @@ export default function App() {
     await updateHistory(passedDrink, -1)
   }
 
+  const formatDate = (day) => {
+    const str = day.toLocaleDateString()
+    return `${str.substring(3,5)}.${str.substring(0,2)}.${str.substring(6)}`
+  }
+
   const updateHistory = async (drink, num) => {
     const date = new Date() //"2022-10-24T23:50:21.817Z"
-    const day = `${date}`.substring(0, 15)
-
+    const day = formatDate(date)
+    console.log(day)
     if (history.filter(item => item.date === day ).length === 0) {
-      setHistory([...history, {
+      const temp = [...history, {
         date: day,
         data: [{...drink, count: 1}],
         id: v4(),
       }]
-      )
+      setHistory(temp)
+      await editObject('History', temp)
       return
     }    
     const temp = Array.from(history)
@@ -362,9 +367,21 @@ export default function App() {
 
             <Fassroller width={styles.fassroller.width} height={styles.fassroller.height} fill={styles.fassroller.color}/>
 
-            <Pressable onLongPress={openCountSheet} delayLongPress={2500}>
-              <Text style={styles.countSudoku}>{countDooku}</Text>
-            </Pressable>
+            <View style={{backgroundColor: styles.accentColor, borderRadius: 10, marginTop: 7, marginLeft: 20, 
+                          justifyContent: 'center', paddingHorizontal: 20, height: 70 }}
+            >
+              <Pressable android_ripple={{color: styles === blue ? styles.drinkColor : styles.rippleColor, 
+                                          borderless: true, radius: 69}} onLongPress={openCountSheet} delayLongPress={2500}
+              >
+                <Text style={{...styles.countSudoku, paddingHorizontal: 0, 
+                              paddingBottom:0, marginHorizontal: 0, 
+                              marginTop: 0, marginBottom: 4,
+                              backgroundColor: '#ffffff00'}}
+                >
+                    {countDooku}
+                </Text>
+              </Pressable>
+            </View> 
 
           </View>
 

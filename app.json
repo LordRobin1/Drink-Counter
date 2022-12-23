@@ -4,10 +4,10 @@
     "slug": "DrinkCounter",
     "version": "1.1.0",
     "orientation": "portrait",
-    "icon": "./assets/adaptive-icon.png",
+    "icon": "./assets/adaptive-icon_2048.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/adaptive-icon_2048.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -22,8 +22,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#1b1b1b"
+        "foregroundImage": "./assets/splash.png",
+        "backgroundColor": "#00417d"
       },
       "package": "com.lordrobin.DrinkCounter"
     },

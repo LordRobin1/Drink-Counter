@@ -1,5 +1,6 @@
-import { StyleSheet, Text, Pressable, View } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { blue } from '../styles';
 
 const BottomMenu = ({ currentStyle, drinks, onPaid }) => {
     const styles = StyleSheet.create({
@@ -37,7 +38,7 @@ const BottomMenu = ({ currentStyle, drinks, onPaid }) => {
             Total:  {total(drinks)} €
         </Text>
         <View style={{backgroundColor: currentStyle.accentColor, borderRadius: 10,}}>
-            <Pressable android_ripple={{color: currentStyle.rippleColor, borderless: true, radius: 69}} onPress={onPaid}>
+            <Pressable android_ripple={{color: currentStyle === blue ? currentStyle.drinkColor : currentStyle.rippleColor, borderless: true, radius: 69}} onPress={onPaid}>
                 <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 5, paddingHorizontal: 10}}>
                     <Icon name='check' style={styles.icon}/>
                     <Text style={{...styles.text, color: '#fff'}}>Paid</Text>

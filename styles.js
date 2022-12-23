@@ -12,7 +12,7 @@ const colors = {
     darkRippleColor: '#aaaaaa',
     
     blueBGColor: '#004280',
-    blueAccBGColor: '#003363',
+    blueAccColor: '#003363',
     blueSheetColor: '#00203d',
     blueSheetHandleColor: '#001427',
     blueDrinkColor: '#00203d',
@@ -92,7 +92,7 @@ export const blue = StyleSheet.create({
     sheetHandleColor: colors.blueSheetHandleColor,
     sheetHandleIndicatorColor: colors.dbTextColor,
     textColor: colors.dbTextColor,
-    accentColor: colors.blueAccBGColor,
+    accentColor: colors.blueAccColor,
     drinkColor: colors.blueDrinkColor,
     rippleColor: colors.blueRippleColor,
     container: {
@@ -122,7 +122,7 @@ export const blue = StyleSheet.create({
       marginBottom: 25,
       marginTop: 15,
       marginHorizontal: 20,
-      backgroundColor: colors.blueAccBGColor,
+      backgroundColor: colors.blueAccColor,
       borderRadius: 5,
       textAlignVertical: 'center',
       textAlign: 'center',
