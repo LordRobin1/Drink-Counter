@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+const fassrollerScale = 85
+
 const colors = {
     darkBGColor: '#2b2b2b',
     darkAccColor: '#00417d',
@@ -70,8 +72,9 @@ export const dark = StyleSheet.create({
         paddingBottom: 2,
     },
     fassroller: {
-        width: 90,
-        height: 90,
+        width: fassrollerScale,
+        height: fassrollerScale,
+        color: colors.blueBGColor,
     },
     icon: {
         color: colors.dbTextColor,
@@ -127,8 +130,9 @@ export const blue = StyleSheet.create({
       paddingBottom: 2,
     },
     fassroller: {
-      width: 90,
-      height: 90,
+      width: fassrollerScale,
+      height: fassrollerScale,
+      color: '#fff'
     },
     icon: {
       color: colors.dbTextColor,
@@ -184,8 +188,9 @@ export const light = StyleSheet.create({
       paddingBottom: 2,
     },
     fassroller: {
-      width: 90,
-      height: 90,
+      width: fassrollerScale,
+      height: fassrollerScale,
+      color: colors.lightAccColor,
     },
     icon: {
       color: colors.lightTextColor,
