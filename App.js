@@ -123,10 +123,10 @@ export default function App() {
 
     if (history.filter(item => item.date === day ).length === 0) {
       setHistory([...history, {
-          date: day,
-          data: [{...drink, count: 1}],
-          id: v4(),
-        }]
+        date: day,
+        data: [{...drink, count: 1}],
+        id: v4(),
+      }]
       )
       return
     }    
